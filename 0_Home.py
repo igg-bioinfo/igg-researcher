@@ -31,7 +31,7 @@ scopus_id = st.text_input("SCOPUS ID:", value=investigator.scopus_id if investig
 
 orcid_id = st.text_input("ORCID ID:", value=investigator.orcid_id if investigator.orcid_id else "")
 researcher_id = st.text_input("Researcher ID:", value=investigator.researcher_id if investigator.researcher_id else "")
-investigator.save_ids(first_name, last_name, user_name, contract, scopus_id, orcid_id, researcher_id)
+investigator.save_data(first_name, last_name, user_name, contract, unit, scopus_id, orcid_id, researcher_id)
 st.markdown("---")
 
 if investigator.first_name != "" or investigator.last_name != "":
@@ -56,7 +56,7 @@ st.markdown("#### Metriche da Scopus")
 year_current = datetime.now().year
 investigator.get_metrics(year_current)
 st.write("Ultimo aggiornamento: **" + str(investigator.metrics_date) + "**")
-has_all_pucs = investigator.check_pucs(year_current)
+has_all_pucs = investigator.check_pucs()
 if has_all_pucs:
     investigator.get_pucs(year_current)
 col_5years, col_10years, col_all = st.columns([1,1,1])
