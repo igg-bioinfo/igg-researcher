@@ -32,9 +32,9 @@ scopus_id = st.text_input("SCOPUS ID:", value=investigator.scopus_id if investig
 orcid_id = st.text_input("ORCID ID:", value=investigator.orcid_id if investigator.orcid_id else "")
 researcher_id = st.text_input("Researcher ID:", value=investigator.researcher_id if investigator.researcher_id else "")
 investigator.save_data(first_name, last_name, user_name, contract, unit, scopus_id, orcid_id, researcher_id)
-st.markdown("---")
 
 if investigator.first_name != "" or investigator.last_name != "":
+    st.markdown("---")
     st.markdown("**Controlla su Scopus di non avere identificativi doppi a tuo nome al seguente link:**")
     html = ""
     html += "<a href='https://www.scopus.com/results/authorNamesList.uri?name=name&st1="
@@ -50,6 +50,8 @@ if investigator.first_name != "" or investigator.last_name != "":
     st.markdown("* Seleziona gli identificativi multipli")
     st.markdown("* Clicca sull'opzione 'Request to merge authors'")
     st.markdown("* Segui le istruzioni della banca dati")
+else:
+    st.markdown("**Una volta inseriti nome e cognome, comparirà un link che ti reindirizzerà a Scopus per controllare eventuali duplicati.**")
 st.markdown("---")
 
 st.markdown("#### Metriche da Scopus")
@@ -61,13 +63,13 @@ if has_all_pucs:
     investigator.get_pucs(year_current)
 col_5years, col_10years, col_all = st.columns([1,1,1])
 with col_5years:
-    st.write("**Ultimi 5 anni**")
+    st.write("**Ultimi 5 anni (escluso anno corrente)**")
     set_prop(st, "H-index", investigator.hindex5)
     set_prop(st, "Pubblicazioni", investigator.n_pubs5)
     set_prop(st, "Citazioni", investigator.all_cited5)
     set_prop(st, "PUC", investigator.pucs5 if has_all_pucs else None)
 with col_10years:
-    st.write("**Ultimi 10 anni**")
+    st.write("**Ultimi 10 anni (escluso anno corrente)**")
     set_prop(st, "H-index", investigator.hindex10)
     set_prop(st, "Pubblicazioni", investigator.n_pubs10)
     set_prop(st, "Citazioni", investigator.all_cited10)

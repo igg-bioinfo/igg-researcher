@@ -20,8 +20,8 @@ class User:
     researcher_id = ""
 
     age = ""
-    update_date = ""
-    metrics_date = ""
+    update_date = "Nessuna data"
+    metrics_date = "Nessuna data"
     user_confirmed = False
     hindex = None
     n_pubs = None
@@ -45,11 +45,12 @@ class User:
         if name != "":
             self.name = name
             self.get_investigator()
-            self.db.cur.execute("SELECT user_id, user_name, user_type, name FROM users WHERE name = %s", [self.name])
+            self.db.cur.execute("SELECT user_id, user_name, user_type, name FROM users WHERE name = %s ", [self.name])
             res = self.db.cur.fetchone()
             if res != None:
                 self.id = res[0]
-                self.user_name = res[1]
+                if res[1] != None and res[1] != '':
+                    self.user_name = res[1]
                 self.user_type = res[2]
                 self.name = res[3]
         elif "logged_user" in self.st.session_state and self.st.session_state["logged_user"] != None:
@@ -64,39 +65,28 @@ class User:
     
     def get_investigator(self):
         sql = ""
-        sql += "SELECT " + age_field + " as age, "
-        sql += "CASE WHEN d.first_name IS NULL THEN '' ELSE d.first_name END as first_name, "
-        sql += "CASE WHEN d.last_name IS NULL THEN '' ELSE d.last_name END as last_name, "
-        sql += "CASE WHEN d.unit IS NULL THEN i.unit ELSE d.unit END as unit, "
-        sql += "CASE WHEN d.contract IS NULL THEN i.contract ELSE d.contract END as contract, "
-        sql += "CASE WHEN d.scopus_id IS NULL THEN i.scopus_id ELSE d.scopus_id END as scopus_id, " 
-        sql += "CASE WHEN d.orcid_id IS NULL THEN i.orcid_id ELSE d.orcid_id END as orcid_id, "
-        sql += "CASE WHEN d.researcher_id IS NULL THEN i.researcher_id ELSE d.researcher_id END as researcher_id, "
-        sql += "CASE WHEN d.inv_name IS NULL THEN '0' ELSE '1' END as user_confirmed, "
-        sql += "CASE WHEN d.update_date IS NULL THEN i.update_date ELSE d.update_date END as update_date "
-        sql += "FROM investigators i "
-        sql += "LEFT OUTER JOIN investigator_details d ON d.inv_name = i.inv_name "
-        sql += "WHERE i.inv_name = %s and update_year = %s "
+        sql += "SELECT * FROM view_invs "
+        sql += "WHERE inv_name = %s and update_year = %s "
         self.db.cur.execute(sql, [self.name, datetime.now().year])
         res = self.db.cur.fetchone()
         if res != None:
             self.age = int(res[0])
-            self.first_name = res[1] 
-            self.last_name = res[2] 
-            self.unit = res[3] 
-            self.contract = res[4] 
-            self.scopus_id = res[5] 
-            self.orcid_id = res[6] 
-            self.researcher_id = res[7] 
-            self.user_confirmed = res[8] == '1'
-            self.update_date = res[9]
+            self.first_name = res[2] 
+            self.last_name = res[3] 
+            self.unit = res[5] 
+            self.contract = res[6] 
+            self.scopus_id = res[7] 
+            self.orcid_id = res[8] 
+            self.researcher_id = res[9] 
+            self.user_confirmed = res[10] == '1'
+            self.update_date = res[11]
             self.is_inv = True 
 
 
     def login(self):
         def check_get_user():
-            self.st.success(self.st.session_state["username"])
-            self.db.cur.execute("SELECT user_id, user_name, user_type, name FROM users WHERE user_name = %s and user_password = %s",
+            #self.st.success(self.st.session_state["username"])
+            self.db.cur.execute("SELECT user_id, user_name, user_type, name FROM users WHERE user_name = %s and user_password = %s and is_enabled = true ",
                                 [self.st.session_state["username"], self.st.session_state["password"]])
             res = self.db.cur.fetchone()
             if res != None:
