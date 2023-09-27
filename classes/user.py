@@ -276,21 +276,18 @@ class User:
         lasts10 = 0
         corrs10 = 0
         for r in res:
-            if check_year(self.st, year, r[0], 5):
+            if check_year(year, r[0], 5):
                 firsts5 += self.check_fields_value([1,2,3], r)
                 lasts5 += self.check_fields_value([4,5,6], r)
                 corrs5 += self.check_fields_value([7,8,9,10,11], r)
-            if check_year(self.st, year, r[0], 10):
+            if check_year(year, r[0], 10):
                 firsts10 +=  self.check_fields_value([1,2,3], r)
                 lasts10 += self.check_fields_value([4,5,6], r)
                 corrs10 += self.check_fields_value([7,8,9,10,11], r)
-            if check_year(self.st, year, r[0], 0):
+            if check_year(year, r[0], 0):
                 firsts += self.check_fields_value([1,2,3], r)
                 lasts += self.check_fields_value([4,5,6], r)
                 corrs += self.check_fields_value([7,8,9,10,11], r)
         self.pucs5 = str(firsts5) + " - " + str(lasts5) + " - " + str(corrs5)
         self.pucs10 = str(firsts10) + " - " + str(lasts10) + " - " + str(corrs10)
         self.pucs = str(firsts) + " - " + str(lasts) + " - " + str(corrs)
-
-
-        

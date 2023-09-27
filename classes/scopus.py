@@ -84,62 +84,6 @@ class Scopus:
         return False
 
 
-    def sort_by_cited(self, e):
-        return e["cited"]
-    
-    def get_hindex(self, pubs, years_range):
-        hindex = 0
-        index = 1
-        for p in pubs:
-            if index > p["cited"]:
-                break
-            pub_year = datetime.strptime(p["pub_date"], '%Y-%m-%d').year
-            if check_year(self.st, self.year, pub_year, years_range):
-                hindex = index
-                index += 1
-        return hindex
-    
-    def get_allcited(self, pubs, years_range):
-        allcited = 0
-        for p in pubs:
-            pub_year = datetime.strptime(p["pub_date"], '%Y-%m-%d').year
-            if check_year(self.st, self.year, pub_year, years_range):
-                allcited += p["cited"]
-        return allcited
-    
-    def get_n_pubs(self, pubs, years_range):
-        n_pubs = 0
-        for p in pubs:
-            pub_year = datetime.strptime(p["pub_date"], '%Y-%m-%d').year
-            if check_year(self.st, self.year, pub_year, years_range):
-                n_pubs += 1
-        return n_pubs
-
-    def set_metrics(self, author_scopus, pubs: list, update_date):
-        pubs.sort(key=self.sort_by_cited, reverse=True)
-
-        hindex = self.get_hindex(pubs, 0)
-        n_pubs = self.get_n_pubs(pubs, 0)
-        allcited = self.get_allcited(pubs, 0)
-
-        hindex5 = self.get_hindex(pubs, 5)
-        n_pubs5 = self.get_n_pubs(pubs, 5)
-        allcited5 = self.get_allcited(pubs, 5)
-
-        hindex10 = self.get_hindex(pubs, 10)
-        n_pubs10 = self.get_n_pubs(pubs, 10)
-        allcited10 = self.get_allcited(pubs, 10)
-
-        sql = "UPDATE scopus_metrics SET hindex=%s, pubs=%s, allcited=%s, hindex5=%s, pubs5=%s, allcited5=%s, hindex10=%s, pubs10=%s, allcited10=%s, "
-        sql += "update_date=%s WHERE author_scopus=%s and update_year = %s"
-        self.db.cur.execute(sql, [hindex, n_pubs, allcited, hindex5, n_pubs5, allcited5, hindex10, n_pubs10, allcited10, update_date, author_scopus, self.year])
-        sql = "INSERT INTO scopus_metrics (author_scopus, hindex, pubs, allcited, hindex5, pubs5, allcited5, hindex10, pubs10, allcited10, update_date, update_year) "
-        sql += "SELECT %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s "
-        sql += "WHERE NOT EXISTS (SELECT 1 FROM scopus_metrics WHERE author_scopus = %s and update_year = %s)"
-        self.db.cur.execute(sql, [author_scopus, hindex, n_pubs, allcited, hindex5, n_pubs5, allcited5, hindex10, n_pubs10, allcited10, 
-                                  update_date, self.year, author_scopus, self.year])
-
-
     #-----------------------------------AUTORI
     def get_authors_update_details(self):
         with self.st.spinner():
