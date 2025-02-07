@@ -66,8 +66,8 @@ class User:
     def get_investigator(self):
         sql = ""
         sql += "SELECT * FROM view_invs "
-        sql += "WHERE inv_name = %s and update_year = %s "
-        self.db.cur.execute(sql, [self.name, datetime.now().year])
+        sql += "WHERE inv_name = %s order by update_year desc limit 1 " # and update_year = %s
+        self.db.cur.execute(sql, [self.name]) #[self.name, datetime.now().year]
         res = self.db.cur.fetchone()
         if res != None:
             self.age = int(res[0])
@@ -93,7 +93,7 @@ class User:
                 del self.st.session_state["username"]
                 del self.st.session_state["password"]
                 self.st.session_state["logged_user"] = {'id': res[0], 'name': res[3], 'user_name': res[1], 'user_type': res[2]}
-                self.st.experimental_rerun()
+                self.st.rerun()
             else:
                 self.st.error("Credenziali errate")
                 self.st.session_state["logged_user"] = None
@@ -116,7 +116,7 @@ class User:
             self.st.markdown("Profilo: **" + self.name + "**")
             if self.st.button("Logout"):
                 self.st.session_state["logged_user"] = None
-                self.st.experimental_rerun()
+                self.st.rerun()
 
 
     def is_logged(self, write_error = True):
@@ -159,7 +159,7 @@ class User:
                     sql = "UPDATE user SET user_name=%s, WHERE name=%s "
                     self.db.cur.execute(sql, [user_name, self.name])
                     self.db.conn.commit()
-                self.st.experimental_rerun()
+                self.st.rerun()
 
 
     #-----------------------------------METRICHE BASE

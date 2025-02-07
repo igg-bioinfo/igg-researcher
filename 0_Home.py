@@ -89,13 +89,13 @@ st.write("Pubblicazioni ricavate unicamente dalla banca dati Scopus")
 investigator.get_pubs(year_pubs)
 st.markdown("---")
 
-st.markdown("#### Pubblicazioni di Pubmed")
-st.write("Pubblicazioni di Pubmed non presenti nella banca dati Scopus")
-if year_pubs == all_years:
-    st.warning("Seleziona un anno per vedere le pubblicazioni di Pubmed non presenti nella banca dati Scopus")
-else:
-    pubmed = Pubmed(st, db, True, year_pubs)
-    pubmed.get_no_scopus_pubs_author_for_year(last_name, scopus_id)
+#st.markdown("#### Pubblicazioni di Pubmed")
+#st.write("Pubblicazioni di Pubmed non presenti nella banca dati Scopus")
+#if year_pubs == all_years:
+#    st.warning("Seleziona un anno per vedere le pubblicazioni di Pubmed non presenti nella banca dati Scopus")
+#else:
+#    pubmed = Pubmed(st, db, True, year_pubs)
+#    pubmed.get_no_scopus_pubs_author_for_year(last_name, scopus_id)
 
 db.close()
 #   conda activate streamlit
