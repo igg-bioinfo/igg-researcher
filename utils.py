@@ -87,7 +87,10 @@ def select_year(st, db, table = '', all: bool = False, label: str = "Anno selezi
         sql = "select distinct EXTRACT('Year' from TO_DATE(pub_date,'YYYY-MM-DD')) as pub_year from " + table + " ORDER BY EXTRACT('Year' from TO_DATE(pub_date,'YYYY-MM-DD')) DESC"
         db.cur.execute(sql)
         res = db.cur.fetchall()
-        years = [int(r[0]) for r in res]
+        years = [int(r[0]) for r in res if r[0] is not None]
+        if datetime.now().year not in years:
+            years.append(datetime.now().year)
+            years.sort(reverse= True)
     if all:
         years[0:0] = [all_years]
     return st.selectbox(label, years)

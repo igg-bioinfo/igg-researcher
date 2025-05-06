@@ -191,7 +191,7 @@ class User:
                           self.scopus_id, self.scopus_id, self.scopus_id, 
                           self.scopus_id, self.scopus_id, self.scopus_id, self.scopus_id, self.scopus_id,
                           self.scopus_id]
-                sql = "select s.eid, s.doi, s.pm_id, s.title, s.pub_date, s.pub_type, s.cited, "
+                sql = "SELECT DISTINCT s.eid, 'https://doi.org/' || s.doi as doi, s.pm_id, s.title, s.pub_date, s.pub_type, s.cited, "
                 sql += "CASE WHEN p.eid is not null THEN true ELSE false END as PUC, "
                 sql += "CASE WHEN p.first1 = %s or p.first2 = %s or p.first3 = %s THEN true ELSE false END as Primo, "
                 sql += "CASE WHEN p.last1 = %s or p.last2 = %s or p.last3 = %s THEN true ELSE false END as Ultimo, "
@@ -200,6 +200,7 @@ class User:
                 sql += "LEFT OUTER JOIN scopus_pucs p ON p.eid = s.eid "
                 sql += "WHERE author_scopus = %s "
                 if year != all_years:
+                    self.st.write('mah')
                     sql += "and EXTRACT('Year' from TO_DATE(pub_date,'YYYY-MM-DD')) = %s "
                     params.append(year)
                 sql += "ORDER BY pub_date DESC"
@@ -210,7 +211,9 @@ class User:
                     df.set_index('EID', inplace=True)
                     download_excel(self.st, df, "scopus_pubs_" + self.scopus_id + "_" + str(year) + "_" + datetime.now().strftime("%Y-%m-%d_%H.%M"))
                     self.st.write(str(len(df)) + " Righe")
-                    self.st.dataframe(df, height=row_height)
+                    self.st.dataframe(df, height=row_height, column_config={
+                            "DOI": self.st.column_config.LinkColumn("DOI"),
+                        })
 
 
     #-----------------------------------PUC
